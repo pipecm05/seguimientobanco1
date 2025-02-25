@@ -14,10 +14,10 @@ class BancoTest {
     void setUp() {
         banco = new Banco("Mi Banco");
         usuario = new Usuario(
-                "Juan Perez",       // nombre
+                "miguel",       // nombre
                 "Calle 123",  // direccion
                 "12345",            // id
-                "juan@gmail.com", // correo
+                "miguel@gmail.com", // correo
                 "123",      // contraseña
                 true                // estado (activo)
         );
@@ -52,7 +52,7 @@ class BancoTest {
         // Actualizar el usuario
         Usuario usuarioActualizado = new Usuario(
                 "Maria Lopez",       // nombre
-                "Avenida Siempre Viva 456",  // direccion
+                "Avenida 456",  // direccion
                 "12345",            // id
                 "maria@gmail.com", // correo
                 "456",      // contraseña
@@ -146,7 +146,7 @@ class BancoTest {
 
         // Realizar una transacción en la billetera
         RegistroTransaccion transaccion = new RegistroTransaccion(
-                "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
+                "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
         );
         banco.realizarTransaccion(numeroBilletera, transaccion);
 
@@ -159,7 +159,7 @@ class BancoTest {
         // Intentar realizar una transacción en una billetera que no existe
         assertThrows(NoSuchElementException.class, () -> {
             banco.realizarTransaccion("99999", new RegistroTransaccion(
-                    "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
+                    "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
             ));
         });
     }

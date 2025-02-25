@@ -13,10 +13,10 @@ class BilleteraVirtualTest {
     @BeforeEach
     void setUp() {
         usuario = new Usuario(
-                "Juan Perez",       // nombre
+                "miguel",       // nombre
                 "Calle 123",  // direccion
                 "12345",            // id
-                "juan@gmail.com", // correo
+                "miguel@gmail.com", // correo
                 "123",      // contraseña
                 true                // estado (activo)
         );
@@ -65,7 +65,7 @@ class BilleteraVirtualTest {
     void testRealizarTransaccionSaldoInsuficiente() {
         // Intentar realizar una transacción con saldo insuficiente (gasto)
         RegistroTransaccion transaccion = new RegistroTransaccion(
-                "1", LocalDateTime.now(), -1500.0, "Juan Perez", Categoria.GASTO
+                "1", LocalDateTime.now(), -1500.0, "miguel", Categoria.GASTO
         );
 
         // Verificar que se lanza una excepción
@@ -78,7 +78,7 @@ class BilleteraVirtualTest {
     void testObtenerPorcentajeGastosIngresos() {
         // Agregar transacciones de ingreso y gasto
         billetera.realizarTransaccion(new RegistroTransaccion(
-                "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
+                "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
         ));
         billetera.realizarTransaccion(new RegistroTransaccion(
                 "2", LocalDateTime.now(), -200.0, "Felipe Garcia", Categoria.GASTO
