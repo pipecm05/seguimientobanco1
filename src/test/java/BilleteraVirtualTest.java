@@ -31,7 +31,7 @@ class BilleteraVirtualTest {
     void testConsultarTransaccionExistente() throws Exception {
         // Agregar una transacción
         RegistroTransaccion transaccion = new RegistroTransaccion(
-                "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
+                "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
         );
         billetera.realizarTransaccion(transaccion);
 
@@ -52,7 +52,7 @@ class BilleteraVirtualTest {
     void testRealizarTransaccionValida() throws Exception {
         // Realizar una transacción válida (ingreso)
         RegistroTransaccion transaccion = new RegistroTransaccion(
-                "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
+                "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
         );
         billetera.realizarTransaccion(transaccion);
 
