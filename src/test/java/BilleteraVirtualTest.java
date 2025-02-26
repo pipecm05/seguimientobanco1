@@ -1,8 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BilleteraVirtualTest {
@@ -30,7 +28,7 @@ class BilleteraVirtualTest {
     }
 
     @Test
-    void testConsultarTransaccionExistente() {
+    void testConsultarTransaccionExistente() throws Exception {
         // Agregar una transacción
         RegistroTransaccion transaccion = new RegistroTransaccion(
                 "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
@@ -44,13 +42,14 @@ class BilleteraVirtualTest {
     @Test
     void testConsultarTransaccionNoExistente() {
         // Verificar que se lanza una excepción si la transacción no existe
-        assertThrows(NoSuchElementException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             billetera.consultarTransaccion("99");
         });
+        assertEquals("No se encontró una transacción con el ID: 99", exception.getMessage());
     }
 
     @Test
-    void testRealizarTransaccionValida() {
+    void testRealizarTransaccionValida() throws Exception {
         // Realizar una transacción válida (ingreso)
         RegistroTransaccion transaccion = new RegistroTransaccion(
                 "1", LocalDateTime.now(), 500.0, "Juan Perez", Categoria.INGRESO
@@ -69,13 +68,14 @@ class BilleteraVirtualTest {
         );
 
         // Verificar que se lanza una excepción
-        assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             billetera.realizarTransaccion(transaccion);
         });
+        assertEquals("Saldo insuficiente para realizar la transacción.", exception.getMessage());
     }
 
     @Test
-    void testObtenerPorcentajeGastosIngresos() {
+    void testObtenerPorcentajeGastosIngresos() throws Exception {
         // Agregar transacciones de ingreso y gasto
         billetera.realizarTransaccion(new RegistroTransaccion(
                 "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
@@ -91,8 +91,9 @@ class BilleteraVirtualTest {
     @Test
     void testObtenerPorcentajeGastosIngresosSinIngresos() {
         // Verificar que se lanza una excepción si no hay ingresos
-        assertThrows(ArithmeticException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             billetera.obtenerPorcentajeGastosIngresos();
         });
+        assertEquals("No hay ingresos registrados para calcular el porcentaje.", exception.getMessage());
     }
 }

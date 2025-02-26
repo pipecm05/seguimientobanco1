@@ -13,78 +13,125 @@ public class Banco {
         this.billeterasVirtuales = new ArrayList<>();
     }
 
-    // Método para crear un usuario
-    public void crearUsuario(Usuario usuario) throws IllegalArgumentException {
+    /**
+     * Método que permite agregar un usuario a la lista de usuarios.
+     * @param usuario Usuario a agregar
+     * @throws Exception Si el usuario ya existe o es nulo
+     */
+    public void agregarUsuario(Usuario usuario) throws Exception {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo.");
         }
-        if (listaUsuarios.contains(usuario)) {
-            throw new IllegalArgumentException("El usuario ya existe en el banco.");
+
+        Usuario usuarioBuscado = obtenerUsuario(usuario.getId());
+
+        // Si el usuario ya existe, lanzar una excepción
+        if (usuarioBuscado != null) {
+            throw new Exception("Ya existe un usuario con el mismo ID.");
+        } else {
+            listaUsuarios.add(usuario);
         }
-        listaUsuarios.add(usuario);
     }
 
-    // Método para actualizar un usuario
-    public void actualizarUsuario(String id, Usuario usuarioActualizado) throws NoSuchElementException {
-        Usuario usuario = obtenerUsuario(id);
-        if (usuario == null) {
-            throw new NoSuchElementException("No se encontró un usuario con el ID: " + id);
+    /**
+     * Método que permite eliminar un usuario de la lista de usuarios.
+     * @param id ID del usuario a eliminar
+     * @throws Exception Si no se encuentra un usuario con el ID dado
+     */
+    public void eliminarUsuario(String id) throws Exception {
+        Usuario usuarioBuscado = obtenerUsuario(id);
+
+        // Si el usuario no existe, lanzar una excepción
+        if (usuarioBuscado == null) {
+            throw new Exception("No existe un usuario con el ID dado.");
+        } else {
+            listaUsuarios.remove(usuarioBuscado);
         }
-        usuario.setNombre(usuarioActualizado.getNombre());
-        usuario.setDireccion(usuarioActualizado.getDireccion());
-        usuario.setCorreo(usuarioActualizado.getCorreo());
-        usuario.setContraseña(usuarioActualizado.getContraseña());
-        usuario.setEstado(usuarioActualizado.isEstado());
     }
 
-    // Método para eliminar un usuario
-    public void eliminarUsuario(String id) throws NoSuchElementException {
-        Usuario usuario = obtenerUsuario(id);
-        if (usuario == null) {
-            throw new NoSuchElementException("No se encontró un usuario con el ID: " + id);
+    /**
+     * Método que permite actualizar un usuario en la lista de usuarios.
+     * @param usuarioActualizado Usuario con los datos actualizados
+     * @throws Exception Si no se encuentra un usuario con el ID dado
+     */
+    public void actualizarUsuario(Usuario usuarioActualizado) throws Exception {
+        Usuario usuarioBuscado = obtenerUsuario(usuarioActualizado.getId());
+
+        // Si el usuario no existe, lanzar una excepción
+        if (usuarioBuscado != null) {
+            usuarioBuscado.setNombre(usuarioActualizado.getNombre());
+            usuarioBuscado.setDireccion(usuarioActualizado.getDireccion());
+            usuarioBuscado.setCorreo(usuarioActualizado.getCorreo());
+            usuarioBuscado.setContraseña(usuarioActualizado.getContraseña());
+            usuarioBuscado.setEstado(usuarioActualizado.isEstado());
+        } else {
+            throw new Exception("No existe un usuario con el ID dado.");
         }
-        listaUsuarios.remove(usuario);
     }
 
-    // Método para crear una billetera virtual
-    public void crearBilleteraVirtual(Usuario usuario, double saldoInicial) throws IllegalArgumentException {
+    /**
+     * Método que permite obtener un usuario de la lista de usuarios.
+     * @param id ID del usuario a buscar
+     * @return Usuario encontrado o null si no se encuentra
+     */
+    public Usuario obtenerUsuario(String id) {
+        return listaUsuarios
+                .stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Método que permite crear una billetera virtual para un usuario.
+     * @param usuario Usuario al que se le creará la billetera
+     * @param saldoInicial Saldo inicial de la billetera
+     * @throws Exception Si el usuario no está registrado o es nulo
+     */
+    public void crearBilleteraVirtual(Usuario usuario, double saldoInicial) throws Exception {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo.");
         }
-        if (!listaUsuarios.contains(usuario)) {
-            throw new IllegalArgumentException("El usuario no está registrado en el banco.");
+
+        Usuario usuarioBuscado = obtenerUsuario(usuario.getId());
+
+        // Si el usuario no está registrado, lanzar una excepción
+        if (usuarioBuscado == null) {
+            throw new Exception("El usuario no está registrado en el banco.");
+        } else {
+            BilleteraVirtual billetera = new BilleteraVirtual(saldoInicial, usuario);
+            billeterasVirtuales.add(billetera);
         }
-        BilleteraVirtual billetera = new BilleteraVirtual(saldoInicial, usuario);
-        billeterasVirtuales.add(billetera);
     }
 
-    // Método para obtener un usuario por su ID
-    public Usuario obtenerUsuario(String id) throws NoSuchElementException {
-        for (Usuario usuario : listaUsuarios) {
-            if (usuario.getId().equals(id)) {
-                return usuario;
-            }
-        }
-        throw new NoSuchElementException("No se encontró un usuario con el ID: " + id);
-    }
-
-    // Método para realizar una transacción en una billetera virtual
-    public void realizarTransaccion(String numeroBilletera, RegistroTransaccion transaccion) throws NoSuchElementException, IllegalArgumentException {
+    /**
+     * Método que permite realizar una transacción en una billetera virtual.
+     * @param numeroBilletera Número de la billetera
+     * @param transaccion Transacción a realizar
+     * @throws Exception Si no se encuentra la billetera o la transacción no es válida
+     */
+    public void realizarTransaccion(String numeroBilletera, RegistroTransaccion transaccion) throws Exception {
         BilleteraVirtual billetera = obtenerBilleteraPorNumero(numeroBilletera);
+
+        // Si la billetera no existe, lanzar una excepción
         if (billetera == null) {
-            throw new NoSuchElementException("No se encontró una billetera con el número: " + numeroBilletera);
+            throw new Exception("No se encontró una billetera con el número: " + numeroBilletera);
+        } else {
+            billetera.realizarTransaccion(transaccion);
         }
-        billetera.realizarTransaccion(transaccion);
     }
 
-    // Método auxiliar para obtener una billetera por su número
+    /**
+     * Método auxiliar para obtener una billetera por su número.
+     * @param numeroBilletera Número de la billetera
+     * @return Billetera encontrada o null si no se encuentra
+     */
     private BilleteraVirtual obtenerBilleteraPorNumero(String numeroBilletera) {
-        for (BilleteraVirtual billetera : billeterasVirtuales) {
-            if (billetera.getNumero().equals(numeroBilletera)) {
-                return billetera;
-            }
-        }
-        return null;
+        return billeterasVirtuales
+                .stream()
+                .filter(b -> b.getNumero().equals(numeroBilletera))
+                .findFirst()
+                .orElse(null);
     }
 
     // Getters y Setters

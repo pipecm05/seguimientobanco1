@@ -1,8 +1,6 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BancoTest {
@@ -24,9 +22,9 @@ class BancoTest {
     }
 
     @Test
-    void testCrearUsuario() {
+    void testCrearUsuario() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Verificar que el usuario fue agregado
         assertEquals(1, banco.getListaUsuarios().size());
@@ -34,20 +32,21 @@ class BancoTest {
     }
 
     @Test
-    void testCrearUsuarioDuplicado() {
+    void testCrearUsuarioDuplicado() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Intentar crear el mismo usuario nuevamente
-        assertThrows(IllegalArgumentException.class, () -> {
-            banco.crearUsuario(usuario);
+        Exception exception = assertThrows(Exception.class, () -> {
+            banco.agregarUsuario(usuario);
         });
+        assertEquals("Ya existe un usuario con el mismo ID.", exception.getMessage());
     }
 
     @Test
-    void testActualizarUsuario() {
+    void testActualizarUsuario() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Actualizar el usuario
         Usuario usuarioActualizado = new Usuario(
@@ -58,7 +57,7 @@ class BancoTest {
                 "456",      // contraseña
                 false               // estado (inactivo)
         );
-        banco.actualizarUsuario("12345", usuarioActualizado);
+        banco.actualizarUsuario(usuarioActualizado);
 
         // Verificar que el usuario fue actualizado
         Usuario usuarioObtenido = banco.obtenerUsuario("12345");
@@ -69,15 +68,16 @@ class BancoTest {
     @Test
     void testActualizarUsuarioNoExistente() {
         // Intentar actualizar un usuario que no existe
-        assertThrows(NoSuchElementException.class, () -> {
-            banco.actualizarUsuario("99999", usuario);
+        Exception exception = assertThrows(Exception.class, () -> {
+            banco.actualizarUsuario(usuario);
         });
+        assertEquals("No existe un usuario con el ID dado.", exception.getMessage());
     }
 
     @Test
-    void testEliminarUsuario() {
+    void testEliminarUsuario() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Eliminar el usuario
         banco.eliminarUsuario("12345");
@@ -89,15 +89,16 @@ class BancoTest {
     @Test
     void testEliminarUsuarioNoExistente() {
         // Intentar eliminar un usuario que no existe
-        assertThrows(NoSuchElementException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             banco.eliminarUsuario("99999");
         });
+        assertEquals("No existe un usuario con el ID dado.", exception.getMessage());
     }
 
     @Test
-    void testCrearBilleteraVirtual() {
+    void testCrearBilleteraVirtual() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Crear una billetera virtual para el usuario
         banco.crearBilleteraVirtual(usuario, 1000.0);
@@ -110,15 +111,16 @@ class BancoTest {
     @Test
     void testCrearBilleteraVirtualUsuarioNoRegistrado() {
         // Intentar crear una billetera virtual para un usuario no registrado
-        assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             banco.crearBilleteraVirtual(usuario, 1000.0);
         });
+        assertEquals("El usuario no está registrado en el banco.", exception.getMessage());
     }
 
     @Test
-    void testObtenerUsuario() {
+    void testObtenerUsuario() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Obtener el usuario por su ID
         Usuario usuarioObtenido = banco.obtenerUsuario("12345");
@@ -128,17 +130,9 @@ class BancoTest {
     }
 
     @Test
-    void testObtenerUsuarioNoExistente() {
-        // Intentar obtener un usuario que no existe
-        assertThrows(NoSuchElementException.class, () -> {
-            banco.obtenerUsuario("99999");
-        });
-    }
-
-    @Test
-    void testRealizarTransaccion() {
+    void testRealizarTransaccion() throws Exception {
         // Crear un usuario en el banco
-        banco.crearUsuario(usuario);
+        banco.agregarUsuario(usuario);
 
         // Crear una billetera virtual para el usuario
         banco.crearBilleteraVirtual(usuario, 1000.0);
@@ -157,10 +151,11 @@ class BancoTest {
     @Test
     void testRealizarTransaccionBilleteraNoExistente() {
         // Intentar realizar una transacción en una billetera que no existe
-        assertThrows(NoSuchElementException.class, () -> {
+        Exception exception = assertThrows(Exception.class, () -> {
             banco.realizarTransaccion("99999", new RegistroTransaccion(
                     "1", LocalDateTime.now(), 500.0, "miguel", Categoria.INGRESO
             ));
         });
+        assertEquals("No se encontró una billetera con el número: 99999", exception.getMessage());
     }
 }

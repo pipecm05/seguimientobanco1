@@ -35,30 +35,41 @@ public class BilleteraVirtual {
         return numeroGenerado;
     }
 
-    // Método para consultar el saldo
+    /**
+     * Método para consultar el saldo de la billetera.
+     * @return Saldo actual de la billetera
+     */
     public double consultarSaldo() {
         return saldo;
     }
 
-    // Método para consultar una transacción por su ID
-    public RegistroTransaccion consultarTransaccion(String id) throws NoSuchElementException {
-        for (RegistroTransaccion transaccion : registroTransacciones) {
-            if (transaccion.getId().equals(id)) {
-                return transaccion;
-            }
-        }
-        throw new NoSuchElementException("No se encontró una transacción con el ID: " + id);
+    /**
+     * Método para consultar una transacción por su ID.
+     * @param id ID de la transacción a buscar
+     * @return Transacción encontrada
+     * @throws Exception Si no se encuentra una transacción con el ID dado
+     */
+    public RegistroTransaccion consultarTransaccion(String id) throws Exception {
+        return registroTransacciones
+                .stream()
+                .filter(t -> t.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new Exception("No se encontró una transacción con el ID: " + id));
     }
 
-    // Método para realizar una transacción
-    public void realizarTransaccion(RegistroTransaccion transaccion) throws IllegalArgumentException {
+    /**
+     * Método para realizar una transacción.
+     * @param transaccion Transacción a realizar
+     * @throws Exception Si la transacción es nula o no hay saldo suficiente
+     */
+    public void realizarTransaccion(RegistroTransaccion transaccion) throws Exception {
         if (transaccion == null) {
             throw new IllegalArgumentException("La transacción no puede ser nula.");
         }
 
         // Verificar si es un gasto y si hay saldo suficiente
         if (transaccion.getMonto() < 0 && saldo < Math.abs(transaccion.getMonto())) {
-            throw new IllegalArgumentException("Saldo insuficiente para realizar la transacción.");
+            throw new Exception("Saldo insuficiente para realizar la transacción.");
         }
 
         // Actualizar el saldo
@@ -68,8 +79,12 @@ public class BilleteraVirtual {
         registroTransacciones.add(transaccion);
     }
 
-    // Método para obtener el porcentaje de gastos sobre ingresos
-    public double obtenerPorcentajeGastosIngresos() throws ArithmeticException {
+    /**
+     * Método para obtener el porcentaje de gastos sobre ingresos.
+     * @return Porcentaje de gastos sobre ingresos
+     * @throws Exception Si no hay ingresos registrados
+     */
+    public double obtenerPorcentajeGastosIngresos() throws Exception {
         double totalIngresos = 0;
         double totalGastos = 0;
 
@@ -82,7 +97,7 @@ public class BilleteraVirtual {
         }
 
         if (totalIngresos == 0) {
-            throw new ArithmeticException("No hay ingresos registrados para calcular el porcentaje.");
+            throw new Exception("No hay ingresos registrados para calcular el porcentaje.");
         }
 
         return (totalGastos / totalIngresos) * 100;
@@ -93,9 +108,9 @@ public class BilleteraVirtual {
         return numero;
     }
 
-    public void setNumero(String numero) {
+    public void setNumero(String numero) throws Exception {
         if (numero == null || numero.length() != 10 || !numero.matches("\\d{10}")) {
-            throw new IllegalArgumentException("El número de billetera debe tener 10 dígitos.");
+            throw new Exception("El número de billetera debe tener 10 dígitos.");
         }
         this.numero = numero;
     }
