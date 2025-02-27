@@ -122,7 +122,7 @@ public class Banco {
     }
 
     /**
-     * Método para obtener una billetera por su número.
+     * Método auxiliar para obtener una billetera por su número.
      * @param numeroBilletera Número de la billetera
      * @return Billetera encontrada o null si no se encuentra
      */
